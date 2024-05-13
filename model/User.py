@@ -9,7 +9,7 @@ class User(flask_login.mixins.UserMixin):
         self.__username = username
         self.__email = email
         self.set_password(pswd)
-        self.__image_file = "default_pfp.png"
+        self.__profile_picture = "/static/profile_pictures/default_pfp.png"
         
         
     @property
@@ -25,8 +25,8 @@ class User(flask_login.mixins.UserMixin):
         return self.__email
     ...
     @property
-    def image_file(self):
-        return self.__image_file
+    def profile_picture(self):
+        return self.__profile_picture
     ...
         
     def set_password(self, pswd):

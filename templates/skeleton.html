@@ -21,9 +21,15 @@
             <tr>
                 <td style="width: 100%; text-align: left; padding: 5px;"><b>Pynstagram</b></td>
                 {% if usr %}
+
+                    
                 
                 <td style="text-align: end;">
-                    <a href="#" id="userInfo" style="color: white; text-decoration: none;" onclick="window.location = '/account'" role="button"> {{ usr.username }}</a>
+                    <div style="display: flex; justify-content: flex-end; align-items: center; " onclick="window.location = '/account'" role="button">
+                        <img class="rounded" src="{{ usr.profile_picture }}" style="width: 100%; height: 100%;">
+                        <a id="userInfo" style="color: white; text-decoration: none;"> {{ usr.username }}</a>  
+                    </div>
+                        
                 </td>
                 <td style="text-align: end">
                     <a class="btn btn-outline-primary" href="#" onclick="window.location = '/logout'" role="button">
@@ -60,7 +66,7 @@
 </body>
 
 <footer id="dvFooter"
-    style="box-sizing: border-box;position: absolute; bottom: 0; width: 100%;padding: 5px;">
+    style="box-sizing: border-box;position: relative; width: 100%;padding: 5px">
 
     <table style=" width: 100%;background-color: #0d6efd; color: white;">
         <tr>

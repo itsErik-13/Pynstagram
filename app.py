@@ -89,8 +89,7 @@ def logout():
 @flask_login.login_required
 @app.route("/account")
 def account():
-    image_file = flask.url_for("static", filename="profile_pictures/" + User.current().image_file)
-    return flask.render_template("account.html", image_file=image_file)
+    return flask.render_template("account.html")
 ...
 
 

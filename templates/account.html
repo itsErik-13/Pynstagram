@@ -2,7 +2,7 @@
 {% block contents %}
 
 <div class="media; " style="width: 26%; margin-left: 37%; padding-top: 5%;">
-    <img class="rounded" src="{{ image_file }}" style="width: 25%; height: 25%;">
+    <img class="rounded" src="{{ current_user.profile_picture }}" style="width: 25%; height: 25%;">
     <div class="media-body">
         <h2 class="account-heading">{{ current_user.username }}</h2>
         <p class="text-secondary">{{ current_user.email }}</p>
