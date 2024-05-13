@@ -1,0 +1,68 @@
+{% extends "skeleton.html" %}
+
+{% block contents %}
+
+{% if usr %}
+
+<div class="card" id="dvLinks" style="margin: 10px">
+  <div class=”card-header”>Links</div>
+    <div class=”card-body”>
+        {% if link_list %}
+            <ul class="list-group list-group-flush list-group-numbered">
+            {% for link_entry in link_list %}
+                <li class=”list-group-item”>
+                    <a class="btn btn-warning" href="#" onclick="window.location='/link/delete?link_id={{ link_entry.get_safe_id(srp) }}'" role="button">
+                        <img width="24px" src="/static/delete.svg" title="add" />
+                        &nbsp;
+                        Borra</a>
+                    &nbsp;
+                    {% include "link_entry.html" %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <b>Nada por aquí...</b>
+        {% endif %}
+        <div id="dvButtons" style="margin-top: 5%">
+            <a class="btn btn-primary" href="#" onclick="window.location='/link/add'" role="button">
+                <img width="24px" src="/static/add.svg" title="add" />
+                &nbsp;
+                Añade</a>
+        </div>
+    </div>
+</div>
+
+{% else %}
+
+<div id="dvLogin" class="card" style="margin: 10px">
+    <div class=”card-header”>Login</div>
+    <div class=”card-body”>
+        <form   id="frmLogin" name="frmLogin"
+                action="/login"
+                method="POST">
+            <label for="edEmail">Email</label>
+            <input type="text" id="edEmail" name="edEmail"
+                   placeholder="email..." />
+            <br/>
+            <label for="edPswd">Contraseña</label>
+            <input type="password" id="edPswd" name="edPswd" />
+            <p style="margin: 10px">
+            <a href="#" onclick="document.frmLogin.submit()" class="btn btn-primary">
+                <img width="24px" src="/static/login.svg" title="login" />
+                &nbsp;
+                Login
+            </a>
+            &nbsp;
+            <a href="#" onclick="document.frmLogin.action = '/user/add'; document.frmLogin.submit()"
+               class="btn btn-primary">
+                <img width="24px" src="/static/register.svg" title="register" />
+                &nbsp;
+                Register
+            </a>
+            </p>
+        </form>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}
