@@ -50,3 +50,48 @@ def user_add():
     flask.flash("Ahora ya puedes entrar con tus nuevas credenciales.")
     return flask.redirect("/")
 ...
+
+@user_blpr.route("/modify", methods=["POST"])
+def user_modify():
+    usr_name = flask.request.form.get("modifyName")
+    usr_email = flask.request.form.get("modifyEmail")
+    usr_username = flask.request.form.get("modifyUsername")
+    usr_passw = flask.request.form.get("modifyPassword")
+    usr_passw_repeat = flask.request.form.get("modifyRepeatPassword")
+    
+    if (not usr_email and not usr_passw and not usr_username and not usr_name):
+        flask.flash(f"No se ha modificado nada")
+        return flask.redirect("/")
+    
+    if usr_name:
+        User.current().set_name(usr_name)
+        
+    if usr_username and User.find(srp, usr_username):
+        flask.flash("Usuario ya registrado, prueba con otro user.")
+        return flask.redirect("/")
+    elif not usr_username:
+        usr_username = User.current().username
+    else:
+        User.current().set_username(usr_username)
+    ...
+    
+    if usr_email and User.find(srp, usr_email):
+        flask.flash(f"Usuario ya registrado, prueba con otro email. {usr_email=}")
+        return flask.redirect("/")
+    elif not usr_email:
+        usr_email = User.current().email
+    else:
+        User.current().set_email(usr_email)
+    ...
+    
+    if (usr_passw and usr_passw_repeat and usr_passw != usr_passw_repeat):
+        flask.flash("Las contraseñas no coinciden.")
+        return flask.redirect("/")
+    elif usr_passw and usr_passw_repeat:
+        User.current().set_password(usr_passw)
+    ...
+    
+    srp.save(User.current())
+    flask.flash("Ahora ya puedes entrar con tus nuevas credenciales.")
+    return flask.redirect("/logout")
+...

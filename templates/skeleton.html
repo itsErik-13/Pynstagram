@@ -23,7 +23,7 @@
                 {% if usr %}
                 
                 <td style="text-align: end;">
-                    <a href="#" id="userInfo" style="color: white; text-decoration: none;" role="button"> {{ usr.username }}</a>
+                    <a href="#" id="userInfo" style="color: white; text-decoration: none;" onclick="window.location = '/account'" role="button"> {{ usr.username }}</a>
                 </td>
                 <td style="text-align: end">
                     <a class="btn btn-outline-primary" href="#" onclick="window.location = '/logout'" role="button">
@@ -34,13 +34,11 @@
             </tr>
         </table>
     </div>
-    <div id="dvSeparator1" style="margin-top: 10%; margin-bottom: 10%"></div>
-
 
     {% block contents %}
     {% endblock %}
 
-    <div id="dvSeparator2" style="margin-top: 10%; margin-bottom: 10%"></div>
+    <br>
 
     {% set error_list = get_flashed_messages() %}
     {% if error_list %}

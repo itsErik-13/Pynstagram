@@ -34,7 +34,7 @@
 </div>
 
 {% else %}
-<div style="width: 26%; margin-left: 37%;">
+<div style="width: 26%; margin-left: 37%; padding-top: 10%;">
     
 <!-- Pills navs -->
 <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
@@ -70,6 +70,7 @@
         <a class="btn btn-primary" href="#" onclick="document.frmLogin.submit()" role="button">
             <img width="24px" src="/static/icons/log-in.svg" title="Login" />
         </a>
+        <input type="submit" hidden />
       </form>
     </div>
     <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
@@ -109,6 +110,7 @@
         <a class="btn btn-primary" href="#" onclick="document.frmRegister.submit()" role="button">
             <img width="24px" src="/static/icons/user-plus.svg" title="Login" />
         </a>
+        <input type="submit" hidden />
       </form>
     </div>
   </div>
