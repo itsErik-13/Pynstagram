@@ -58,10 +58,15 @@ def user_modify():
     usr_username = flask.request.form.get("modifyUsername")
     usr_passw = flask.request.form.get("modifyPassword")
     usr_passw_repeat = flask.request.form.get("modifyRepeatPassword")
+    usr_profile_picture = flask.request.files['modifyProfilePic']
     
-    if (not usr_email and not usr_passw and not usr_username and not usr_name):
+    if (not usr_email and not usr_passw and not usr_username and not usr_name and not usr_profile_picture):
         flask.flash(f"No se ha modificado nada")
         return flask.redirect("/")
+    
+    if usr_profile_picture:
+        usr_profile_picture.save('static/profile_pictures/' + usr_profile_picture.filename)
+        User.current().set_profile_picture(usr_profile_picture.filename)
     
     if usr_name:
         User.current().set_name(usr_name)
