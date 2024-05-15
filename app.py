@@ -1,6 +1,3 @@
-# Links (c) 2024 Baltasar MIT License <baltasarq@gmail.com>
-
-
 import json
 import flask
 import flask_login
@@ -8,9 +5,11 @@ import sirope
 
 from model.User import User
 from model.Link import Link
+from model.Photo import Photo
 
 from views.user import user_blpr
 from views.link import link_blpr
+from views.photo import photo_blpr
 
 
 def create_app():
@@ -21,6 +20,7 @@ def create_app():
     flapp.config.from_file("instance/config.json", json.load)
     login.init_app(flapp)
     flapp.register_blueprint(user_blpr)
+    flapp.register_blueprint(photo_blpr)
     flapp.register_blueprint(link_blpr)
     return flapp, sirop, login
 ...
@@ -85,11 +85,21 @@ def logout():
     return flask.redirect("/")
 ...
 
-
 @flask_login.login_required
-@app.route("/account")
-def account():
-    return flask.render_template("account.html")
+@app.route("/account/<nombre_usuario>")
+def account(nombre_usuario):
+    acc_usr = User.find(srp, nombre_usuario)
+    
+    sust = {
+        "usr" : User.current(),
+        "acc_usr": acc_usr,
+        "srp": srp,
+    }
+    if acc_usr:
+        return flask.render_template("account.html", **sust)
+    else:
+        flask.flash("El usuario buscado no existe.")
+        return flask.redirect("/")
 ...
 
 
@@ -98,8 +108,12 @@ def account():
 @app.route("/")
 def main():
     usr = User.current()
+    image_list = []
     link_list = []
+    
+    
 
+    image_list = srp.load_last(Photo, 5)
     if usr:
         link_list = srp.filter(Link, lambda l: l.usr_email == usr.email)
     ...
@@ -107,7 +121,8 @@ def main():
     sust = {
         "usr": usr,
         "srp": srp,
-        "link_list": link_list
+        "link_list": link_list,
+        "image_list": image_list
     }
 
     return flask.render_template("index.html", **sust)

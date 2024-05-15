@@ -1,8 +1,8 @@
-# Links (c) 2024 Baltasar MIT License <baltasarq@gmail.com>
-
 
 import flask
+import flask_login
 import sirope
+import time
 
 
 from model.User import User
@@ -60,13 +60,17 @@ def user_modify():
     usr_passw_repeat = flask.request.form.get("modifyRepeatPassword")
     usr_profile_picture = flask.request.files['modifyProfilePic']
     
+    date_string = time.strftime("%Y-%m-%d-%H-%M")
+    
     if (not usr_email and not usr_passw and not usr_username and not usr_name and not usr_profile_picture):
         flask.flash(f"No se ha modificado nada")
         return flask.redirect("/")
     
     if usr_profile_picture:
-        usr_profile_picture.save('static/profile_pictures/' + usr_profile_picture.filename)
-        User.current().set_profile_picture(usr_profile_picture.filename)
+        pfp_filename = f"{date_string}{usr_profile_picture.filename}"
+        print(pfp_filename)
+        usr_profile_picture.save('static/profile_pictures/' + pfp_filename)
+        User.current().set_profile_picture(pfp_filename)
     
     if usr_name:
         User.current().set_name(usr_name)
@@ -97,6 +101,23 @@ def user_modify():
     ...
     
     srp.save(User.current())
-    flask.flash("Ahora ya puedes entrar con tus nuevas credenciales.")
+    flask.flash("Se ha modificado el perfil, debes volver a logearte.")
     return flask.redirect("/logout")
+...
+
+@user_blpr.route("/delete")
+def user_delete():
+    
+    usr_safe_id = flask.request.args.get("usr_id", "").strip()
+    print(usr_safe_id)
+    usr_oid = srp.oid_from_safe(usr_safe_id)
+
+    if srp.exists(usr_oid):
+        srp.delete(usr_oid)
+        flask.flash("Usuario borrado.")
+    else:
+        flask.flash("Usuario no encontrado.")
+    ...
+
+    return flask.redirect("/")
 ...

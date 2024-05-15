@@ -7,66 +7,94 @@
     <title>Pynstagram</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 
+
 </head>
 
 <body>
-    <div style="padding: 5px;">
-        <table style="width: 100%; background-color: #0d6efd; color: white;">
-            <tr>
-                <td style="width: 100%; text-align: left; padding: 5px;"><b>Pynstagram</b></td>
-                {% if usr %}
 
-                    
-                
-                <td style="text-align: end;">
-                    <div style="display: flex; justify-content: flex-end; align-items: center; " onclick="window.location = '/account'" role="button">
-                        <img class="rounded" src="{{ usr.profile_picture }}" style="width: 100%; height: 100%;  margin:5px; ">
-                        <a id="userInfo" style="color: white; text-decoration: none; margin-right: 50%"> {{ usr.username }}</a>  
+    <header class="navbar navbar-expand-lg navbar-dark m-1 bg-primary">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center btn" onclick="window.location = '/'">
+                <img src="/static/icons/logo.svg">
+                <a class="navbar-brand" role="button" >Pynstagram</a>
+            </div>
+            
+
+            {% if usr %}
+            <div class="collapse navbar-collapse justify-content-end ml-auto p-1" id="navbarSupportedContent">
+                <div class="form-inline my-2 my-lg-0 p-1">
+                    <div class="col-md-15 mx-auto">
+                        <div class="input-group">
+                            <input class="form-control border rounded-pill" type="search" placeholder="Usuario..."
+                                id="searchUser">
+                            <div class="input-group-append">
+                                <button class="btn" type="button" id="search-button"
+                                    onclick="window.location = '/account/'+document.getElementById('searchUser').value">
+                                    <img src="/static/icons/search.svg"></img>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                        
-                </td>
-                <td style="text-align: end">
-                    <a class="btn btn-outline-primary" href="#" onclick="window.location = '/logout'" role="button">
-                        <img width="24px" src="/static/icons/log-out.svg" class="red" title="logout" />
-                    </a>
-                </td>
-                {% endif %}
-            </tr>
-        </table>
+                </div>
+                <ul class="navbar-nav">
+                    <li class="nav-item p-1">
+                        <div class="d-flex align-items-center btn" onclick="window.location='/account/{{ usr.username }}'">
+                            <img class="rounded" src="{{ usr.profile_picture }}"
+                                style="max-height: 40px; width: auto; margin-right: 10px;">
+                            <a id="userInfo" style="color: white; text-decoration: none;">{{ usr.username }}</a>
+                        </div>
+                    </li>
+                    <li class="nav-item p-1 d-flex align-items-center">
+                        <div class="d-flex align-items-center">
+                            <button class="btn" onclick="window.location = '/logout'">
+                                <img src="/static/icons/log-out.svg" title="logout" />
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            {% endif %}
+        </div>
+    </header> 
+
+    
+    
+    {% set error_list = get_flashed_messages() %}
+    {% if error_list %}
+    {% for error in error_list %}
+    <div class="alert alert-danger alert-dismissible fade show m-1" role="alert" aria-label="error:">
+        {{ error }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    {% endfor %}
+    {% endif %}
+    
+    
 
     {% block contents %}
     {% endblock %}
 
     <br>
 
-    {% set error_list = get_flashed_messages() %}
-    {% if error_list %}
-    {% for error in error_list %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" aria-label="error:">
-        {{ error }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-
-    <div id="dvSeparator3" style="margin-top: 10%; margin-bottom: 10%"></div>
+    {% if usr %}
+    <script>
+        var search = document.getElementById("searchUser");
+        search.addEventListener("keydown", function (e) {
+            if (e.code === "Enter") {  //checks whether the pressed key is "Enter"
+                window.location = '/account/' + search.value
+            }
+        });
+    </script>
     {% endif %}
-
-
-
-
-
-
 </body>
 
-<footer id="dvFooter"
-    style="box-sizing: border-box;position: relative; width: 100%;padding: 5px">
+<footer id="dvFooter" style="box-sizing: border-box;position: relative; width: 100%;padding: 5px">
 
     <table style=" width: 100%;background-color: #0d6efd; color: white;">
         <tr>

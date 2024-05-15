@@ -1,6 +1,3 @@
-# Links (c) 2024 Baltasar MIT License <baltasarq@gmail.com>
-
-
 class Link:
     def __init__(self, email, name, url):
         self.__email = email

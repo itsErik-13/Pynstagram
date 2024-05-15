@@ -9,7 +9,8 @@ class User(flask_login.mixins.UserMixin):
         self.__username = username
         self.__email = email
         self.set_password(pswd)
-        self.__profile_picture = "static/profile_pictures/default_pfp.png"
+        self.__profile_picture = "/static/profile_pictures/default_pfp.png"
+        self.__uploaded_photos = []
         
         
     @property
@@ -42,12 +43,19 @@ class User(flask_login.mixins.UserMixin):
         self.__email = email
         
         
+    def upload_photo(self, photo):
+        self.__uploaded_photos.append(photo)
+        
     def set_profile_picture(self, profile_picture):
-        self.__profile_picture = f"static/profile_pictures/{profile_picture}"
+        self.__profile_picture = f"/static/profile_pictures/{profile_picture}"
         
 
     def get_id(self):
         return self.username
+    ...
+    
+    def get_safe_id(self, srp):
+        return srp.safe_from_oid(self.__oid__)
     ...
 
     def chk_pswd(self, other_pswd):
