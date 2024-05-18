@@ -2,11 +2,11 @@
 {% block contents %}
 
 
-<button class="btn btn-primary">
+<button class="btn btn-primary m-1">
     <img width="24px" src="/static/icons/arrow-left.svg" title="GoBack" onclick="goBack()" />
 </button>
 
-<div class="media; " style="width: 26%; margin-left: 37%; padding-top: 5%;">
+<div class="media; " style="width: 50%; margin-left: 25%; padding-top: 5%;">
     <img class="rounded" src="{{ acc_usr.profile_picture }}" style="width: 25%; height: 25%;">
     <div class="media-body">
         <h2 class="account-heading">{{ acc_usr.username }}</h2>
@@ -24,7 +24,7 @@
             <img width="24px" src="/static/icons/trash.svg" title="Delete" />
         </a>
 
-        
+
 
 
 
@@ -44,7 +44,8 @@
                             <img width="24px" src="/static/icons/arrow-left.svg" title="CloseModal" />
                         </button>
                         <!-- Submit button -->
-                        <button type="submit" class="btn btn-danger" onclick="window.location = '/user/delete?usr_id={{ acc_usr.get_safe_id(srp) }}'">
+                        <button type="submit" class="btn btn-danger"
+                            onclick="window.location = '/user/delete?usr_id={{ acc_usr.get_safe_id(srp) }}'">
                             <img width="24px" src="/static/icons/trash.svg" title="Modify" />
                         </button>
                     </div>
@@ -142,6 +143,117 @@
         </div>
 
         {% endif %}
+
+
+        <div class="row justify-content-center">
+            <!-- Aquí irán las imágenes de tu base de datos -->
+            {% for image in list_images %}
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <img src="{{ image.url }}" class="card-img-top" alt="Imagen">
+                    <div class="card-body">
+                        <a href="/account/{{ image.usrname }}" class="text-decoration-none link-dark"> <b>{{
+                                image.usrname }}</b></a>
+                        <p class="card-title">{{ image.caption }}</p>
+                        <div class="d-flex justify-content-start">
+                            <div class="like-container d-flex flex-column align-items-center">
+                                <form action="/photo/like" method="post">
+                                    <input type="text" id="hiddenUrl" name="hiddenUrl" value="{{ image.url }}" hidden>
+                                    <button type="submit" class="btn">
+                                        <img src="{% if current_user.username in image.liked_by %}/static/icons/like-red.svg{% else %}/static/icons/like-white.svg{% endif %}"
+                                            alt="Like">
+                                    </button>
+                                    <p style="text-align: center;">{{ image.likes }}</p>
+                                </form>
+                            </div>
+                        </div>
+
+                        {% if current_user.username == image.usrname %}
+                        <!-- Abre el modal -->
+                        <a class="btn btn-primary" id="modifyButton" role="button" data-bs-toggle="modal"
+                            data-bs-target="#editPhotoModal">
+                            <img width="24px" src="/static/icons/edit.svg" title="Edit" />
+                        </a>
+
+
+                        <a class="btn btn-danger" id="deleteButton" role="button" data-bs-toggle="modal"
+                            data-bs-target="#deletePhotoModal">
+                            <img width="24px" src="/static/icons/trash.svg" title="Delete" />
+                        </a>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="deletePhotoModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true" data-bs-backdrop="static">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Eliminar fotografía</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Está seguro de eliminar la fotografía?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <img width="24px" src="/static/icons/arrow-left.svg" title="CloseModal" />
+                                        </button>
+                                        <!-- Submit button -->
+                                        <button type="submit" class="btn btn-danger"
+                                            onclick="window.location = '/photo/delete?photo_id={{ image.get_safe_id(srp) }}'">
+                                            <img width="24px" src="/static/icons/trash.svg" title="Modify" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="editPhotoModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true" data-bs-backdrop="static">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Edit Photo</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmModify" name="frmModify" action="/photo/modify"
+                                            enctype="multipart/form-data" method="POST">
+                                            <input type="text" id="hiddeUrl" name="hiddenUrl" class="form-control"
+                                                hidden value="{{ image.url }}" />
+                                            <!-- Caption input -->
+                                            <div class="form-group">
+                                                <label for="modifyCaption">Pie de Foto</label>
+                                                <input type="text" id="modifyCaption" name="modifyCaption"
+                                                    class="form-control" />
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <img width="24px" src="/static/icons/arrow-left.svg" title="CloseModal" />
+                                        </button>
+                                        <!-- Submit button -->
+                                        <button type="submit" class="btn btn-primary"
+                                            onclick="document.frmModify.submit()">
+                                            <img width="24px" src="/static/icons/edit.svg" title="Modify" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 

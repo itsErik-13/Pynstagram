@@ -1,8 +1,12 @@
+import sirope
+
 class Photo:
-    def __init__(self, url, caption):
+    def __init__(self, url, caption, usrname):
         self.__url = url
         self.__caption = caption
+        self.__usrname = usrname
         self.__likes = 0
+        self.__liked_by = []
     ...
 
     @property
@@ -16,17 +20,37 @@ class Photo:
     ...
     
     @property
+    def usrname(self):
+        return self.__usrname
+    ...
+    
+    @property
     def likes(self):
         return self.__likes
     ...
     
-    def like(self):
-        self.__likes += 1
+    @property
+    def liked_by(self):
+        return self.__liked_by
+    ...
     
-    def dislike(self):
-        self.__likes -= 1
+    @caption.setter
+    def caption(self, caption):
+        self.__caption = caption
+        
+    def like(self, user):
+        if user not in self.liked_by:
+            self.__likes += 1
+            self.liked_by.append(user)
+        else:
+            self.__likes -= 1
+            self.liked_by.remove(user)
 
     def get_safe_id(self, srp):
         return srp.safe_from_oid(self.__oid__)
     ...
+    
+    @staticmethod
+    def find(srp: sirope.Sirope, url: str) -> "Photo":
+        return srp.find_first(Photo, lambda u: u.url == url)
 ...

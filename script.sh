@@ -1,16 +1,25 @@
-#!/bin/sh -eu
-keys=`redis-cli keys '*'`
-if [ "$keys" ]; then
-    echo "$keys" | while IFS= read -r key; do
-        type=`echo | redis-cli type "$key"`
-        case "$type" in
-            string) value=`echo | redis-cli get "$key"`;;
-            hash) value=`echo | redis-cli hgetall "$key"`;;
-            set) value=`echo | redis-cli smembers "$key"`;;
-            list) value=`echo | redis-cli lrange "$key" 0 -1`;;
-            zset) value=`echo | redis-cli zrange "$key" 0 -1 withscores`;;
-        esac
-        echo "> $key ($type):"
-        echo "$value" | sed -E 's/^/    /'
-    done
-fi
+#!/usr/bin/bash
+
+# get all keys
+# find the type for each key
+# get value(s) for key
+# list, string, hash, set
+
+for each in $( redis-cli KEYS \* ); do
+  result=$(redis-cli type $each)
+  value=""
+  if [ $result == "list" ]
+  then
+    value=$(redis-cli lrange $each 0 -1)
+  elif [ $result == "string" ]
+  then
+    value=$(redis-cli get $each)
+  elif [ $result == "hash" ]
+  then
+    value=$(redis-cli hgetall $each)
+  elif [ $result == "set" ]
+  then
+    value=$(redis-cli smembers $each)
+  fi
+  printf "key %s\t\t type %s\t\t value %s.\n" $each $result $value
+done

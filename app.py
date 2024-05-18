@@ -2,15 +2,18 @@ import json
 import flask
 import flask_login
 import sirope
+import os
 
 from model.User import User
-from model.Link import Link
 from model.Photo import Photo
 
 from views.user import user_blpr
-from views.link import link_blpr
 from views.photo import photo_blpr
 
+BASE_DIR = '.'  
+
+if not os.path.exists(BASE_DIR + "/static/uploaded_photos"):
+    os.makedirs(BASE_DIR + "/static/uploaded_photos")
 
 def create_app():
     flapp = flask.Flask(__name__)
@@ -21,7 +24,6 @@ def create_app():
     login.init_app(flapp)
     flapp.register_blueprint(user_blpr)
     flapp.register_blueprint(photo_blpr)
-    flapp.register_blueprint(link_blpr)
     return flapp, sirop, login
 ...
 
@@ -74,6 +76,7 @@ def login():
     ...
 
     flask_login.login_user(usr)
+    flask.flash("Login realizado.")
     return flask.redirect("/")
 ...
 
@@ -90,12 +93,15 @@ def logout():
 def account(nombre_usuario):
     acc_usr = User.find(srp, nombre_usuario)
     
-    sust = {
+    
+    
+    if acc_usr:
+        sust = {
         "usr" : User.current(),
         "acc_usr": acc_usr,
         "srp": srp,
-    }
-    if acc_usr:
+        "list_images" : srp.filter(Photo, lambda l: l.usrname == acc_usr.username)
+        }
         return flask.render_template("account.html", **sust)
     else:
         flask.flash("El usuario buscado no existe.")
@@ -109,19 +115,11 @@ def account(nombre_usuario):
 def main():
     usr = User.current()
     image_list = []
-    link_list = []
-    
-    
-
-    image_list = srp.load_last(Photo, 5)
-    if usr:
-        link_list = srp.filter(Link, lambda l: l.usr_email == usr.email)
-    ...
+    image_list = srp.load_all(Photo)
 
     sust = {
         "usr": usr,
         "srp": srp,
-        "link_list": link_list,
         "image_list": image_list
     }
 

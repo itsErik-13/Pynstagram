@@ -29,6 +29,11 @@ class User(flask_login.mixins.UserMixin):
     def profile_picture(self):
         return self.__profile_picture
     ...
+    
+    @property
+    def uploaded_photos(self):
+        return self.__uploaded_photos
+    ...
         
     def set_password(self, pswd):
         self.__pswd = safe.generate_password_hash(pswd)
@@ -44,7 +49,7 @@ class User(flask_login.mixins.UserMixin):
         
         
     def upload_photo(self, photo):
-        self.__uploaded_photos.append(photo)
+        self.__uploaded_photos = self.__uploaded_photos + [photo]
         
     def set_profile_picture(self, profile_picture):
         self.__profile_picture = f"/static/profile_pictures/{profile_picture}"

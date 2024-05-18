@@ -3,9 +3,11 @@ import flask
 import flask_login
 import sirope
 import time
+import os
 
 
 from model.User import User
+from model.Photo import Photo
 
 
 def get_blprint():
@@ -70,6 +72,10 @@ def user_modify():
         pfp_filename = f"{date_string}{usr_profile_picture.filename}"
         print(pfp_filename)
         usr_profile_picture.save('static/profile_pictures/' + pfp_filename)
+        path = "." + User.current().profile_picture
+        if os.path.exists(path) and path != "./static/profile_pictures/default_pfp.png":
+            # Elimina el archivo del sistema de archivos
+            os.remove(path)
         User.current().set_profile_picture(pfp_filename)
     
     if usr_name:
@@ -113,6 +119,18 @@ def user_delete():
     usr_oid = srp.oid_from_safe(usr_safe_id)
 
     if srp.exists(usr_oid):
+        
+        user = srp.load(usr_oid)
+        for photo in user.uploaded_photos:
+            photo_srp = Photo.find(srp, photo)
+            photo_safe_id = photo_srp.get_safe_id(srp)
+            photo_oid = srp.oid_from_safe(photo_safe_id)
+            if srp.exists(photo_oid):
+                srp.delete(photo_oid)
+            path = "." + photo
+            if os.path.exists(path):
+                # Elimina el archivo del sistema de archivos
+                os.remove(path)
         srp.delete(usr_oid)
         flask.flash("Usuario borrado.")
     else:
