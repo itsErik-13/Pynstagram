@@ -119,7 +119,9 @@ def user_delete():
     usr_oid = srp.oid_from_safe(usr_safe_id)
 
     if srp.exists(usr_oid):
-        
+        pfp_url = "." + User.current().profile_picture
+        if os.path.exists(pfp_url) and pfp_url != "./static/profile_pictures/default_pfp.png":
+            os.remove(pfp_url)
         user = srp.load(usr_oid)
         for photo in user.uploaded_photos:
             photo_srp = Photo.find(srp, photo)
