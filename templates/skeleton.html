@@ -17,11 +17,11 @@
 
 <body>
 
-    <header class="navbar navbar-expand-lg navbar-dark m-1 bg-primary">
+    <header class="navbar navbar-expand-lg navbar-dark bg-primary position-fixed bottom-1 end-1 z-3 w-100">
         <div class="container-fluid">
             <div class="d-flex align-items-center btn" onclick="window.location = '/'">
                 <img src="/static/icons/logo.svg">
-                <a class="navbar-brand" role="button" >Pynstagram</a>
+                <a class="navbar-brand" role="button">Pynstagram</a>
             </div>
             
 
@@ -63,6 +63,7 @@
         </div>
     </header> 
 
+    <div id="dvSeparator1" style="padding-top: 7%"></div>
     
     
     {% set error_list = get_flashed_messages() %}
@@ -94,7 +95,7 @@
     {% endif %}
 </body>
 
-<footer id="dvFooter" style="box-sizing: border-box;position: relative; width: 100%;padding: 5px">
+<footer id="dvFooter" class="position-fixed z-3 w-100 bottom-0 end-1">
 
     <table style=" width: 100%;background-color: #0d6efd; color: white;">
         <tr>

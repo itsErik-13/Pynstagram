@@ -107,8 +107,8 @@ def user_modify():
     ...
     
     srp.save(User.current())
-    flask.flash("Se ha modificado el perfil, debes volver a logearte.")
-    return flask.redirect("/logout")
+    flask.flash("Se ha modificado el perfil.")
+    return flask.redirect("/")
 ...
 
 @user_blpr.route("/delete")
