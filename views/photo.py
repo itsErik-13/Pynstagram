@@ -86,12 +86,17 @@ def photo_delete():
 
     if srp.exists(photo_oid):
         path = '.' +srp.load(photo_oid).url
+        for comment in srp.load(photo_oid).get_comments(srp):
+            com_id = comment.get_safe_id(srp)
+            com_oid = srp.oid_from_safe(com_id)
+            srp.delete(com_oid)
         srp.delete(photo_oid)
         User.current().uploaded_photos.remove(path[1:])
-        print(User.current().uploaded_photos)
+        for com in User.current().commented_photos:
+            if com == path[1:]:
+                User.current().commented_photos.remove(com)
         srp.save(User.current())
         if os.path.exists(path):
-            # Elimina el archivo del sistema de archivos
             os.remove(path)
         flask.flash("Fotografía borrada.")
     else:

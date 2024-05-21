@@ -1,6 +1,6 @@
 <div class="col-md-4">
     <div class="card mb-3">
-        <img src="{{ image.url }}" class="card-img-top" alt="Imagen" role="button" data-bs-toggle="modal"
+        <img src="{{ image.url }}" class="card-img-top rounded" alt="Imagen" role="button" data-bs-toggle="modal"
             data-bs-target="#imageModal{{ image.url }}">
         <div class="card-body">
             <a href="/account/{{ image.usrname }}" class="text-decoration-none link-dark"> <b>{{
@@ -22,7 +22,7 @@
             <!-- Modal for each image -->
             <div class="modal fade" id="imageModal{{ image.url }}" tabindex="-1"
                 aria-labelledby="imageModalLabel{{ image.url }}" aria-hidden="true" data-bs-backdrop="static">
-                <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="imageModalLabel{{ image.url }}">Details</h5>
@@ -31,7 +31,7 @@
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <img src="{{ image.url }}" class="img-fluid w-100" alt="Imagen">
+                                    <img src="{{ image.url }}" class="img-fluid w-100 rounded" alt="Imagen">
                                     <div class="d-flex justify-content-start">
                                         <div class="like-container d-flex flex-column align-items-center">
                                             <form action="/photo/like" method="post">
@@ -53,71 +53,37 @@
                                     <p class="card-title">{{ image.caption }}</p>
                                     <!-- Section for comments -->
                                     <div id="commentsSection{{ image.url }}">
-                                        <p>Comentarios:</p>
-                                        <div>
-                                            {% for comment in image.get_comments() %}
-                                            <div class="comment mb-2">
-                                                <a href="/account/{{ comment.usrname }}"
-                                                    class="text-decoration-none link-dark"> <b>{{ comment.usrname }}
-                                                    </b></a><small>{{ comment.time }}</small>
-                                                <p>{{ comment.msg}}</p>
-                                                {% if current_user.username == comment.usrname %}
-                                                <!-- Abre el modal -->
-                                                <a class="btn btn-primary" id="modifyCommentButton" role="button"
-                                                    data-bs-toggle="modal" data-bs-target="#editPhotoModal">
-                                                    <img width="24px" src="/static/icons/edit.svg" title="Edit" />
-                                                </a>
-                                                <a class="btn btn-danger" id="deleteCommentButton{{ loop.index }}" role="button"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#deleteCommentModal{{ loop.index }}">
-                                                    <img width="24px" src="/static/icons/trash.svg" title="Delete" />
-                                                </a>
-
-
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="deleteCommentModal{{ loop.index }}"
-                                                    tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
-                                                    data-bs-backdrop="static">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="exampleModalLabel">Eliminar
-                                                                    comentario</h5>
-                                                                <button type="button" class="btn-close"
-                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                ¿Está seguro de eliminar el comentario?
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button class="btn btn-secondary"
-                                                                    data-bs-dismiss="modal">
-                                                                    <img width="24px" src="/static/icons/arrow-left.svg"
-                                                                        title="CloseModal" />
-                                                                </button>
-                                                                <!-- Submit button -->
-                                                                <button type="submit" class="btn btn-danger"
-                                                                    onclick="window.location = '/photo/delete?photo_id={{ image.get_safe_id(srp) }}'">
-                                                                    <img width="24px" src="/static/icons/trash.svg"
-                                                                        title="Delete" />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {% endif %}
-
-
-
-                                            </div>
-                                            {% endfor %}
-                                        </div>
                                         <form action="/comment/add" method="post">
                                             <input type="text" name="hiddenUrl" value="{{ image.url }}" hidden>
                                             <textarea name="comment" class="form-control"
                                                 placeholder="Escribe un comentario"></textarea>
-                                            <button type="submit" class="btn btn-primary mt-2">Enviar</button>
+                                            <button type="submit" class="btn btn-primary mt-2">
+                                                <img width="24px" src="/static/icons/message-circle.svg" title="Send" />
+                                            </button>
                                         </form>
+                                        <p>Comentarios:</p>
+                                        <div>
+                                            {% for comment in image.get_comments(srp) %}
+                                            <div class="comment mb-2 d-flex justify-content-between align-items-center">
+                                                <div style="max-width: 90%;">
+                                                    <a href="/account/{{ comment.usrname }}"
+                                                        class="text-decoration-none link-dark">
+                                                        <b>{{ comment.usrname }}</b>
+                                                    </a>
+                                                    <small>{{ comment.time }}</small>
+                                                    <p style="word-wrap: break-word;       
+                                                    overflow-wrap: break-word;   
+                                                    white-space: pre-wrap;">{{ comment.msg}}</p>
+                                                </div>
+                                                {% if current_user.username == comment.usrname %}
+                                                <a class="btn btn-danger" id="deleteCommentButton" role="button"
+                                                    onclick="window.location = '/comment/delete?photo_id={{ image.get_safe_id(srp) }}&comment_id={{ comment.get_safe_id(srp) }}'">
+                                                    <img width="24px" src="/static/icons/trash.svg" title="Delete" />
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -212,10 +178,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
             {% endif %}
         </div>
     </div>

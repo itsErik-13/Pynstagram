@@ -54,10 +54,18 @@ class Photo:
             self.liked_by.remove(user)
             
     def add_comment(self, comment):
-        self.__comments.append(comment.__dict__)
+        self.__comments.insert(0,comment.__dict__)
         
-    def get_comments(self):
-        return [Comment.from_dict(c) for c in self.__comments]
+    def remove_comment(self, comment):
+        self.__comments.remove(comment.__dict__)
+        
+    def get_comments(self, srp):
+        toret = []
+        for comment in srp.filter(Comment, lambda u: u.__dict__ in self.__comments):
+            toret.append(comment)
+        
+        toret.sort(key=lambda x: x.time, reverse=True)
+        return toret
 
     def get_safe_id(self, srp):
         return srp.safe_from_oid(self.__oid__)

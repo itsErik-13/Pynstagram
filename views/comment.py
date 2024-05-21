@@ -40,26 +40,15 @@ def comment_add():
     
     cm = Comment(User.current().username, comment, time)
     photo.add_comment(cm)
-    
+    User.current().add_commented_photo(photo.url)
     
     srp.save(cm)
     srp.save(photo)
+    srp.save(User.current())
+    
+    print(cm.get_safe_id(srp))
     
     flask.flash("Comentario añadido.")
-    return flask.redirect("/")
-...
-
-@comment_blpr.route("/modify", methods=["POST"])
-def photo_modify():
-    
-    photo = Photo.find(srp, flask.request.form.get("hiddenUrl"))
-    caption = flask.request.form.get("modifyCaption")
-    if not caption:
-        flask.flash(f"No se ha modificado nada")
-        return flask.redirect("/")
-    
-    photo.caption = caption
-    srp.save(photo)
     return flask.redirect("/")
 ...
 
@@ -68,21 +57,21 @@ def photo_modify():
 def photo_delete():
     comment_safe_id = flask.request.args.get("comment_id", "").strip()
     comment_oid = srp.oid_from_safe(comment_safe_id)
+    
+    photo_safe_id = flask.request.args.get("photo_id", "").strip()
+    photo_oid = srp.oid_from_safe(photo_safe_id)
+    
 
-    if srp.exists(comment_oid):
+    if srp.exists(comment_oid) and srp.exists(photo_oid):
         com = srp.load(comment_oid)
-        photo = Photo.find(srp, com.url)
-        path = '.' +srp.load(comment_oid).url
+        photo = srp.load(photo_oid)
         srp.delete(comment_oid)
-        User.current().uploaded_photos.remove(path[1:])
-        print(User.current().uploaded_photos)
-        srp.save(User.current())
-        if os.path.exists(path):
-            # Elimina el archivo del sistema de archivos
-            os.remove(path)
-        flask.flash("Fotografía borrada.")
+        photo.remove_comment(com)
+        srp.save(photo)
+        User.current().remove_commented_photo(photo.url)
+        flask.flash("Comentario borrado.")
     else:
-        flask.flash("Fotografía no encontrada.")
+        flask.flash("Error, comentario no borrado.")
     ...
     return flask.redirect("/")
 ...

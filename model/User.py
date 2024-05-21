@@ -11,6 +11,7 @@ class User(flask_login.mixins.UserMixin):
         self.set_password(pswd)
         self.__profile_picture = "/static/profile_pictures/default_pfp.png"
         self.__uploaded_photos = []
+        self.__commented_photos = []
         
         
     @property
@@ -34,6 +35,11 @@ class User(flask_login.mixins.UserMixin):
     def uploaded_photos(self):
         return self.__uploaded_photos
     ...
+    
+    @property
+    def commented_photos(self):
+        return self.__commented_photos
+    ...
         
     def set_password(self, pswd):
         self.__pswd = safe.generate_password_hash(pswd)
@@ -53,7 +59,18 @@ class User(flask_login.mixins.UserMixin):
         
     def set_profile_picture(self, profile_picture):
         self.__profile_picture = f"/static/profile_pictures/{profile_picture}"
+    
+    def add_commented_photo(self, photo):
+        self.__commented_photos = self.__commented_photos + [photo]
+        print(self.__commented_photos)
         
+    
+        
+    def remove_commented_photo(self, photo):
+        try:
+            self.__commented_photos.remove(photo)
+        except ValueError:
+            pass
 
     def get_id(self):
         return self.username
