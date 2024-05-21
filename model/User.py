@@ -62,7 +62,6 @@ class User(flask_login.mixins.UserMixin):
     
     def add_commented_photo(self, photo):
         self.__commented_photos = self.__commented_photos + [photo]
-        print(self.__commented_photos)
         
     
         

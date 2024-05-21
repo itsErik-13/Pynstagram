@@ -123,6 +123,7 @@ def user_delete():
         if os.path.exists(pfp_url) and pfp_url != "./static/profile_pictures/default_pfp.png":
             os.remove(pfp_url)
         user = srp.load(usr_oid)
+        print(user.uploaded_photos)
         for photo in user.uploaded_photos:
             photo_srp = Photo.find(srp, photo)
             photo_safe_id = photo_srp.get_safe_id(srp)
@@ -133,21 +134,22 @@ def user_delete():
             if os.path.exists(path):
                 # Elimina el archivo del sistema de archivos
                 os.remove(path)
-                
-        for photo in user.commented_photos:
-            photo_srp = Photo.find(srp, photo)
-            photo_safe_id = photo_srp.get_safe_id(srp)
-            photo_oid = srp.oid_from_safe(photo_safe_id)
-            ph = srp.load(photo_oid)
-            for comment in ph.get_comments(srp):
-                com_id = comment.get_safe_id(srp)
-                com_oid = srp.oid_from_safe(com_id)
-                com = srp.load(com_oid)
-                if com.usrname == user.username:
-                    srp.delete(com_oid)
-                    ph.remove_comment(com)
-            srp.save(ph)
-        srp.delete(usr_oid)
+        # for photo in user.commented_photos:
+        #     print(photo)
+        #     photo_srp = Photo.find(srp, photo[1:])
+        #     photo_safe_id = photo_srp.get_safe_id(srp)
+        #     photo_oid = srp.oid_from_safe(photo_safe_id)
+        #     ph = srp.load(photo_oid)
+        #     for comment in ph.get_comments(srp):
+        #         com_id = comment.get_safe_id(srp)
+        #         com_oid = srp.oid_from_safe(com_id)
+        #         com = srp.load(com_oid)
+        #         if com.usrname == user.username:
+        #             srp.delete(com_oid)
+        #             ph.remove_comment(com)
+        #
+        # srp.save(ph)
+        #srp.delete(usr_oid)
         flask.flash("Usuario borrado.")
     else:
         flask.flash("Usuario no encontrado.")
