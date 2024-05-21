@@ -7,6 +7,7 @@ import os
 
 from model.User import User
 from model.Photo import Photo
+from model.Comment import Comment
 
 
 def get_blprint():
@@ -96,6 +97,5 @@ def photo_delete():
     else:
         flask.flash("Fotografía no encontrada.")
     ...
-
     return flask.redirect("/")
 ...

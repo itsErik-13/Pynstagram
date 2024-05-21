@@ -21,14 +21,12 @@
 
             <!-- Modal for each image -->
             <div class="modal fade" id="imageModal{{ image.url }}" tabindex="-1"
-                aria-labelledby="imageModalLabel{{ image.url }}" aria-hidden="true"
-                data-bs-backdrop="static">
+                aria-labelledby="imageModalLabel{{ image.url }}" aria-hidden="true" data-bs-backdrop="static">
                 <div class="modal-dialog modal-xl modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="imageModalLabel{{ image.url }}">Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
@@ -49,25 +47,76 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <a href="/account/{{ image.usrname }}"
-                                        class="text-decoration-none link-dark">
+                                    <a href="/account/{{ image.usrname }}" class="text-decoration-none link-dark">
                                         <b>{{ image.usrname }}</b>
                                     </a>
                                     <p class="card-title">{{ image.caption }}</p>
-                                    <!-- Placeholder for messages section -->
-                                    <div id="messagesSection{{ image.id }}">
-                                        <!-- Future messages implementation -->
-                                        <p>Mensajes:</p>
+                                    <!-- Section for comments -->
+                                    <div id="commentsSection{{ image.url }}">
+                                        <p>Comentarios:</p>
                                         <div>
-                                            <!-- Messages will be loaded here -->
+                                            {% for comment in image.get_comments() %}
+                                            <div class="comment mb-2">
+                                                <a href="/account/{{ comment.usrname }}"
+                                                    class="text-decoration-none link-dark"> <b>{{ comment.usrname }}
+                                                    </b></a><small>{{ comment.time }}</small>
+                                                <p>{{ comment.msg}}</p>
+                                                {% if current_user.username == comment.usrname %}
+                                                <!-- Abre el modal -->
+                                                <a class="btn btn-primary" id="modifyCommentButton" role="button"
+                                                    data-bs-toggle="modal" data-bs-target="#editPhotoModal">
+                                                    <img width="24px" src="/static/icons/edit.svg" title="Edit" />
+                                                </a>
+                                                <a class="btn btn-danger" id="deleteCommentButton{{ loop.index }}" role="button"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteCommentModal{{ loop.index }}">
+                                                    <img width="24px" src="/static/icons/trash.svg" title="Delete" />
+                                                </a>
+
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="deleteCommentModal{{ loop.index }}"
+                                                    tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+                                                    data-bs-backdrop="static">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Eliminar
+                                                                    comentario</h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                ¿Está seguro de eliminar el comentario?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">
+                                                                    <img width="24px" src="/static/icons/arrow-left.svg"
+                                                                        title="CloseModal" />
+                                                                </button>
+                                                                <!-- Submit button -->
+                                                                <button type="submit" class="btn btn-danger"
+                                                                    onclick="window.location = '/photo/delete?photo_id={{ image.get_safe_id(srp) }}'">
+                                                                    <img width="24px" src="/static/icons/trash.svg"
+                                                                        title="Delete" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+
+
+                                            </div>
+                                            {% endfor %}
                                         </div>
-                                        <form action="/photo/comment" method="post">
-                                            <input type="text" name="hiddenUrl" value="{{ image.url }}"
-                                                hidden>
+                                        <form action="/comment/add" method="post">
+                                            <input type="text" name="hiddenUrl" value="{{ image.url }}" hidden>
                                             <textarea name="comment" class="form-control"
                                                 placeholder="Escribe un comentario"></textarea>
-                                            <button type="submit"
-                                                class="btn btn-primary mt-2">Enviar</button>
+                                            <button type="submit" class="btn btn-primary mt-2">Enviar</button>
                                         </form>
                                     </div>
                                 </div>
@@ -75,8 +124,8 @@
                         </div>
                         {% if current_user.username == image.usrname %}
                         <div class="modal-footer">
-                            <a class="btn btn-primary" id="modifyButton" role="button"
-                                data-bs-toggle="modal" data-bs-target="#editPhotoModal">
+                            <a class="btn btn-primary" id="modifyButton" role="button" data-bs-toggle="modal"
+                                data-bs-target="#editPhotoModal">
                                 <img width="24px" src="/static/icons/edit.svg" title="Edit" />
                             </a>
 
@@ -111,8 +160,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">Eliminar fotografía</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             ¿Está seguro de eliminar la fotografía?
@@ -138,19 +186,17 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">Edit Photo</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <form id="frmModifyPh" name="frmModifyPh" action="/photo/modify"
                                 enctype="multipart/form-data" method="POST">
-                                <input type="text" id="hiddeUrl" name="hiddenUrl" class="form-control"
-                                    hidden value="{{ image.url }}" />
+                                <input type="text" id="hiddeUrl" name="hiddenUrl" class="form-control" hidden
+                                    value="{{ image.url }}" />
                                 <!-- Caption input -->
                                 <div class="form-group">
                                     <label for="modifyCaption">Pie de Foto</label>
-                                    <input type="text" id="modifyCaption" name="modifyCaption"
-                                        class="form-control" />
+                                    <input type="text" id="modifyCaption" name="modifyCaption" class="form-control" />
                                 </div>
                             </form>
                         </div>
@@ -159,8 +205,7 @@
                                 <img width="24px" src="/static/icons/arrow-left.svg" title="CloseModal" />
                             </button>
                             <!-- Submit button -->
-                            <button type="submit" class="btn btn-primary"
-                                onclick="document.frmModifyPh.submit()">
+                            <button type="submit" class="btn btn-primary" onclick="document.frmModifyPh.submit()">
                                 <img width="24px" src="/static/icons/edit.svg" title="Modify" />
                             </button>
                         </div>

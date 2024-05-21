@@ -1,4 +1,5 @@
 import sirope
+from model.Comment import Comment
 
 class Photo:
     def __init__(self, url, caption, usrname):
@@ -7,6 +8,7 @@ class Photo:
         self.__usrname = usrname
         self.__likes = 0
         self.__liked_by = []
+        self.__comments = []
     ...
 
     @property
@@ -34,6 +36,11 @@ class Photo:
         return self.__liked_by
     ...
     
+    @property
+    def comments(self):
+        return self.__comments
+    ...
+    
     @caption.setter
     def caption(self, caption):
         self.__caption = caption
@@ -45,6 +52,12 @@ class Photo:
         else:
             self.__likes -= 1
             self.liked_by.remove(user)
+            
+    def add_comment(self, comment):
+        self.__comments.append(comment.__dict__)
+        
+    def get_comments(self):
+        return [Comment.from_dict(c) for c in self.__comments]
 
     def get_safe_id(self, srp):
         return srp.safe_from_oid(self.__oid__)

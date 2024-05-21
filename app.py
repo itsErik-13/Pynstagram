@@ -9,6 +9,7 @@ from model.Photo import Photo
 
 from views.user import user_blpr
 from views.photo import photo_blpr
+from views.comment import comment_blpr
 
 BASE_DIR = '.'  
 
@@ -24,6 +25,7 @@ def create_app():
     login.init_app(flapp)
     flapp.register_blueprint(user_blpr)
     flapp.register_blueprint(photo_blpr)
+    flapp.register_blueprint(comment_blpr)
     return flapp, sirop, login
 ...
 
