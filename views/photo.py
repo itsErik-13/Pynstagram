@@ -73,7 +73,10 @@ def photo_like():
     username = User.current().username
     photo = Photo.find(srp, flask.request.form.get("hiddenUrl"))
     photo.like(username)
+    User.current().add_liked_photo(photo.url)
+    srp.save(User.current())
     srp.save(photo)
+    flask.flash(f"Likes: {User.current().liked_photos} \n Comentarios: {User.current().commented_photos}")
     return flask.redirect("/")
 ...
 

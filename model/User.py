@@ -1,6 +1,7 @@
 import flask_login
 import sirope
 import werkzeug.security as safe
+from model.Photo import Photo
 
 
 class User(flask_login.mixins.UserMixin):
@@ -12,6 +13,7 @@ class User(flask_login.mixins.UserMixin):
         self.__profile_picture = "/static/profile_pictures/default_pfp.png"
         self.__uploaded_photos = []
         self.__commented_photos = []
+        self.__liked_photos = []
         
         
     @property
@@ -38,7 +40,20 @@ class User(flask_login.mixins.UserMixin):
     
     @property
     def commented_photos(self):
+        for photo in self.__commented_photos:
+            if sirope.Sirope().find_first(Photo, lambda p: p.url == photo) == None:
+                self.__commented_photos.remove(photo)
+        sirope.Sirope().save(self)
         return self.__commented_photos
+    ...
+    
+    @property
+    def liked_photos(self):
+        for photo in self.__liked_photos:
+            if sirope.Sirope().find_first(Photo, lambda p: p.url == photo) == None:
+                self.__liked_photos.remove(photo)
+        sirope.Sirope().save(self)
+        return self.__liked_photos
     ...
         
     def set_password(self, pswd):
@@ -55,7 +70,7 @@ class User(flask_login.mixins.UserMixin):
         
         
     def upload_photo(self, photo):
-        self.__uploaded_photos = self.__uploaded_photos + [photo]
+        self.__uploaded_photos.append(photo)
         
     def set_profile_picture(self, profile_picture):
         self.__profile_picture = f"/static/profile_pictures/{profile_picture}"
@@ -63,13 +78,20 @@ class User(flask_login.mixins.UserMixin):
     def add_commented_photo(self, photo):
         self.__commented_photos = self.__commented_photos + [photo]
         
+    def add_liked_photo(self, photo):
+        if photo not in self.__liked_photos:
+            self.__liked_photos.append(photo)
+        else:
+            self.__liked_photos.remove(photo)
+        
     
         
     def remove_commented_photo(self, photo):
+        print("Entro")
         try:
             self.__commented_photos.remove(photo)
         except ValueError:
-            pass
+            print("Error")
 
     def get_id(self):
         return self.username

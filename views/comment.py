@@ -69,6 +69,7 @@ def photo_delete():
         photo.remove_comment(com)
         srp.save(photo)
         User.current().remove_commented_photo(photo.url)
+        srp.save(User.current())
         flask.flash("Comentario borrado.")
     else:
         flask.flash("Error, comentario no borrado.")
