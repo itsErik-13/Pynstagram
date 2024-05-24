@@ -71,9 +71,10 @@ def user_modify():
     if usr_profile_picture:
         pfp_filename = f"{date_string}{usr_profile_picture.filename}"
         print(pfp_filename)
-        usr_profile_picture.save('static/profile_pictures/' + pfp_filename)
-        path = "." + User.current().profile_picture
-        if os.path.exists(path) and path != "./static/profile_pictures/default_pfp.png":
+        usr_profile_picture.save('src/static/profile_pictures/' + pfp_filename)
+        path = "src" + User.current().profile_picture
+        
+        if os.path.exists(path) and path != "src/static/profile_pictures/default_pfp.png":
             # Elimina el archivo del sistema de archivos
             os.remove(path)
         User.current().set_profile_picture(pfp_filename)

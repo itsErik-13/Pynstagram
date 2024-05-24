@@ -33,18 +33,17 @@ def photo_add():
     
     photo_filename = f"{date_string}{uploaded_photo.filename}"
     
-    photo_url = f"static/uploaded_photos/{photo_filename}"
+    photo_url = f"/static/uploaded_photos/{photo_filename}"
     
 
     if (not uploaded_photo or not caption):
         flask.flash("Faltan datos de la fotografía.")
         return flask.redirect("/")
     ...
-    uploaded_photo.save(photo_url)
-    photo_url = '/' + photo_url
     ph = Photo(photo_url,caption, User.current().username)
-    
     User.current().upload_photo(photo_url)
+    uploaded_photo.save("src" + photo_url)
+    
     
     srp.save(ph)
     srp.save(User.current())
@@ -88,17 +87,23 @@ def photo_delete():
     photo_oid = srp.oid_from_safe(photo_safe_id)
 
     if srp.exists(photo_oid):
-        path = '.' +srp.load(photo_oid).url
-        for comment in srp.load(photo_oid).get_comments(srp):
+        ph = srp.load(photo_oid)
+        for comment in ph.get_comments(srp):
             com_id = comment.get_safe_id(srp)
             com_oid = srp.oid_from_safe(com_id)
             srp.delete(com_oid)
         srp.delete(photo_oid)
-        User.current().uploaded_photos.remove(path[1:])
+        User.current().uploaded_photos.remove(ph.url)
         for com in User.current().commented_photos:
-            if com == path[1:]:
-                User.current().commented_photos.remove(com)
+            if com == ph.url:
+                try:
+                    User.current().commented_photos.remove(com)
+                except:
+                    pass
         srp.save(User.current())
+        
+        path = "src" + ph.url
+        print(path)
         if os.path.exists(path):
             os.remove(path)
         flask.flash("Fotografía borrada.")

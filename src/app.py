@@ -11,7 +11,7 @@ from views.user import user_blpr
 from views.photo import photo_blpr
 from views.comment import comment_blpr
 
-BASE_DIR = '.'  
+BASE_DIR = './src'  
 
 if not os.path.exists(BASE_DIR + "/static/uploaded_photos"):
     os.makedirs(BASE_DIR + "/static/uploaded_photos")
