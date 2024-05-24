@@ -21,8 +21,9 @@ def get_blprint():
 
 
 user_blpr, srp = get_blprint()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-
+# Permite añadir a un usuario
 @user_blpr.route("/add", methods=["POST"])
 def user_add():
     usr_name = flask.request.form.get("registerName")
@@ -53,6 +54,8 @@ def user_add():
     return flask.redirect("/")
 ...
 
+# Permite modificar los datos de un usuario
+@flask_login.login_required
 @user_blpr.route("/modify", methods=["POST"])
 def user_modify():
     usr_name = flask.request.form.get("modifyName")
@@ -71,10 +74,9 @@ def user_modify():
     if usr_profile_picture:
         pfp_filename = f"{date_string}{usr_profile_picture.filename}"
         print(pfp_filename)
-        usr_profile_picture.save('src/static/profile_pictures/' + pfp_filename)
-        path = "src" + User.current().profile_picture
-        
-        if os.path.exists(path) and path != "src/static/profile_pictures/default_pfp.png":
+        usr_profile_picture.save('static/profile_pictures/' + pfp_filename)
+        path = User.current().profile_picture[1:]
+        if os.path.exists(path) and path != "static/profile_pictures/default_pfp.png":
             # Elimina el archivo del sistema de archivos
             os.remove(path)
         User.current().set_profile_picture(pfp_filename)
@@ -105,6 +107,9 @@ def user_modify():
         return flask.redirect("/")
     elif usr_passw and usr_passw_repeat:
         User.current().set_password(usr_passw)
+    elif usr_passw or usr_passw_repeat:
+        flask.flash("Debe indicar las dos contraseñas para poder cambiarla.")
+        return flask.redirect("/")
     ...
     
     srp.save(User.current())
@@ -112,6 +117,8 @@ def user_modify():
     return flask.redirect("/")
 ...
 
+# Permite eliminar a un usuario y toda su información relacionada
+@flask_login.login_required
 @user_blpr.route("/delete")
 def user_delete():
     
@@ -119,11 +126,10 @@ def user_delete():
     usr_oid = srp.oid_from_safe(usr_safe_id)
 
     if srp.exists(usr_oid):
-        pfp_url = "." + User.current().profile_picture
-        if os.path.exists(pfp_url) and pfp_url != "./static/profile_pictures/default_pfp.png":
-            os.remove(pfp_url)
         user = srp.load(usr_oid)
-        print(user.uploaded_photos)
+        pfp_url = User.current().profile_picture
+        if os.path.exists(pfp_url) and pfp_url != "/static/profile_pictures/default_pfp.png":
+            os.remove(pfp_url)
         for photo in user.uploaded_photos:
             photo_srp = Photo.find(srp, photo)
             if(photo_srp):
@@ -132,10 +138,9 @@ def user_delete():
                 photo_oid = srp.oid_from_safe(photo_safe_id)
                 if srp.exists(photo_oid):
                     srp.delete(photo_oid)
-                path = "." + photo
-                if os.path.exists(path):
+                if os.path.exists(photo):
                     # Elimina el archivo del sistema de archivos
-                    os.remove(path)
+                    os.remove(photo)
         for photo in user.commented_photos:
             photo_srp = Photo.find(srp, photo)
             if(photo_srp):

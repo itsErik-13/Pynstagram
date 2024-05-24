@@ -2,7 +2,6 @@ import json
 import flask
 import flask_login
 import sirope
-import os
 
 from model.User import User
 from model.Photo import Photo
@@ -11,11 +10,7 @@ from views.user import user_blpr
 from views.photo import photo_blpr
 from views.comment import comment_blpr
 
-BASE_DIR = './src'  
-
-if not os.path.exists(BASE_DIR + "/static/uploaded_photos"):
-    os.makedirs(BASE_DIR + "/static/uploaded_photos")
-
+# Crea la aplicación
 def create_app():
     flapp = flask.Flask(__name__)
     sirop = sirope.Sirope()
@@ -51,7 +46,7 @@ def get_fav_icon():
     return app.send_static_file("icons/favicon.ico")
 ...
 
-
+# Permite logearse, para eso obtiene del formulario los datos y los comprueba
 @app.route("/login", methods=["POST"])
 def login():
     if User.current():
@@ -83,6 +78,7 @@ def login():
 ...
 
 
+# Cierra sesión
 @flask_login.login_required
 @app.route("/logout")
 def logout():
@@ -90,6 +86,7 @@ def logout():
     return flask.redirect("/")
 ...
 
+# Muestra el perfil de un usuario
 @flask_login.login_required
 @app.route("/account/<nombre_usuario>")
 def account(nombre_usuario):
@@ -112,7 +109,7 @@ def account(nombre_usuario):
 
 
 
-
+# Muestra la pagina principal
 @app.route("/")
 def main():
     usr = User.current()

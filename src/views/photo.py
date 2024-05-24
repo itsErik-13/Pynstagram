@@ -23,6 +23,7 @@ def get_blprint():
 photo_blpr, srp = get_blprint()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Permite subir una fotografía
 @flask_login.login_required
 @photo_blpr.route("/add", methods=["POST"])
 def photo_add():
@@ -33,7 +34,7 @@ def photo_add():
     
     photo_filename = f"{date_string}{uploaded_photo.filename}"
     
-    photo_url = f"/static/uploaded_photos/{photo_filename}"
+    photo_url = f"static/uploaded_photos/{photo_filename}"
     
 
     if (not uploaded_photo or not caption):
@@ -42,7 +43,7 @@ def photo_add():
     ...
     ph = Photo(photo_url,caption, User.current().username)
     User.current().upload_photo(photo_url)
-    uploaded_photo.save("src" + photo_url)
+    uploaded_photo.save(photo_url)
     
     
     srp.save(ph)
@@ -52,6 +53,7 @@ def photo_add():
     return flask.redirect("/")
 ...
 
+# Permite modificar una fotografía
 @photo_blpr.route("/modify", methods=["POST"])
 def photo_modify():
     
@@ -63,6 +65,7 @@ def photo_modify():
     
     photo.caption = caption
     srp.save(photo)
+    flask.flash(f"Fotografía modificada")
     return flask.redirect("/")
 ...
 
@@ -75,7 +78,7 @@ def photo_like():
     User.current().add_liked_photo(photo.url)
     srp.save(User.current())
     srp.save(photo)
-    flask.flash(f"Likes: {User.current().liked_photos} \n Comentarios: {User.current().commented_photos}")
+    flask.flash("Se ha likeado la fotografía.")
     return flask.redirect("/")
 ...
 
@@ -100,12 +103,10 @@ def photo_delete():
                     User.current().commented_photos.remove(com)
                 except:
                     pass
-        srp.save(User.current())
-        
-        path = "src" + ph.url
-        print(path)
+        path = ph.url
         if os.path.exists(path):
             os.remove(path)
+        srp.save(User.current())       
         flask.flash("Fotografía borrada.")
     else:
         flask.flash("Fotografía no encontrada.")

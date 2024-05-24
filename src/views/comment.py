@@ -24,19 +24,19 @@ def get_blprint():
 comment_blpr, srp = get_blprint()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Permite añadir un comentario
 @flask_login.login_required
 @comment_blpr.route("/add", methods=["POST"])
 def comment_add():
     
-    photo = Photo.find(srp, flask.request.form.get("hiddenUrl"))
     comment = flask.request.form.get("comment", "").strip()
-    time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    
 
     if (not comment):
         flask.flash("Faltan datos del comentario.")
         return flask.redirect("/")
     ...
+    photo = Photo.find(srp, flask.request.form.get("hiddenUrl"))
+    time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     
     cm = Comment(User.current().username, comment, time)
     photo.add_comment(cm)
@@ -46,12 +46,11 @@ def comment_add():
     srp.save(photo)
     srp.save(User.current())
     
-    print(cm.get_safe_id(srp))
-    
     flask.flash("Comentario añadido.")
     return flask.redirect("/")
 ...
 
+# Permite borrar un comentario
 @flask_login.login_required
 @comment_blpr.route("/delete")
 def photo_delete():
@@ -65,10 +64,10 @@ def photo_delete():
     if srp.exists(comment_oid) and srp.exists(photo_oid):
         com = srp.load(comment_oid)
         photo = srp.load(photo_oid)
-        srp.delete(comment_oid)
         photo.remove_comment(com)
-        srp.save(photo)
         User.current().remove_commented_photo(photo.url)
+        srp.save(photo)
+        srp.delete(comment_oid)
         srp.save(User.current())
         flask.flash("Comentario borrado.")
     else:
