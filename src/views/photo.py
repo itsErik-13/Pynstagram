@@ -43,7 +43,8 @@ def photo_add():
     ...
     ph = Photo(photo_url,caption, User.current().username)
     User.current().upload_photo(photo_url)
-    uploaded_photo.save(photo_url)
+    uploaded_photo.save("src/" + photo_url)
+    
     
     
     srp.save(ph)
@@ -103,7 +104,7 @@ def photo_delete():
                     User.current().commented_photos.remove(com)
                 except:
                     pass
-        path = ph.url
+        path = "src/" + ph.url
         if os.path.exists(path):
             os.remove(path)
         srp.save(User.current())       

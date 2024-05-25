@@ -104,7 +104,6 @@ class User(flask_login.mixins.UserMixin):
     
     # Elimina una url de foto de la lista de fotos comentadas
     def remove_commented_photo(self, photo):
-        print("Entro")
         try:
             self.__commented_photos.remove(photo)
         except ValueError:

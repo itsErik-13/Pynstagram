@@ -74,11 +74,12 @@ def user_modify():
     if usr_profile_picture:
         pfp_filename = f"{date_string}{usr_profile_picture.filename}"
         print(pfp_filename)
-        usr_profile_picture.save('static/profile_pictures/' + pfp_filename)
+        usr_profile_picture.save('src/static/profile_pictures/' + pfp_filename)
         path = User.current().profile_picture[1:]
-        if os.path.exists(path) and path != "static/profile_pictures/default_pfp.png":
+        print(os.path.exists("src/" + path))
+        if os.path.exists("src/" + path) and path != "static/profile_pictures/default_pfp.png":
             # Elimina el archivo del sistema de archivos
-            os.remove(path)
+            os.remove("src/" + path)
         User.current().set_profile_picture(pfp_filename)
     
     if usr_name:
@@ -127,20 +128,10 @@ def user_delete():
 
     if srp.exists(usr_oid):
         user = srp.load(usr_oid)
-        pfp_url = User.current().profile_picture
-        if os.path.exists(pfp_url) and pfp_url != "/static/profile_pictures/default_pfp.png":
+        pfp_url = "src/" + (User.current().profile_picture[1:])
+        if os.path.exists(pfp_url) and pfp_url != "src/static/profile_pictures/default_pfp.png":
             os.remove(pfp_url)
-        for photo in user.uploaded_photos:
-            photo_srp = Photo.find(srp, photo)
-            if(photo_srp):
-                photo_safe_id = photo_srp.get_safe_id(srp)
-                print(photo_safe_id)
-                photo_oid = srp.oid_from_safe(photo_safe_id)
-                if srp.exists(photo_oid):
-                    srp.delete(photo_oid)
-                if os.path.exists(photo):
-                    # Elimina el archivo del sistema de archivos
-                    os.remove(photo)
+            
         for photo in user.commented_photos:
             photo_srp = Photo.find(srp, photo)
             if(photo_srp):
@@ -154,8 +145,23 @@ def user_delete():
                     if com.usrname == user.username:
                         srp.delete(com_oid)
                         ph.remove_comment(com)
-                srp.save(ph)   
+                try:
+                    srp.save(ph)
+                except:
+                    pass  
                 
+        for photo in user.uploaded_photos:
+            photo_srp = Photo.find(srp, photo)
+            if(photo_srp):
+                photo_safe_id = photo_srp.get_safe_id(srp)
+                print(photo_safe_id)
+                photo_oid = srp.oid_from_safe(photo_safe_id)
+                if srp.exists(photo_oid):
+                    srp.delete(photo_oid)
+                if os.path.exists("src/" + photo):
+                    # Elimina el archivo del sistema de archivos
+                    os.remove("src/" + photo)
+                    
         for photo in user.liked_photos:
             photo_srp = Photo.find(srp, photo)
             if(photo_srp):
