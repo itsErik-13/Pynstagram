@@ -8,6 +8,7 @@ import os
 
 from model.User import User
 from model.Photo import Photo
+from model.Comment import Comment
 
 
 def get_blprint():
@@ -133,6 +134,7 @@ def user_delete():
             os.remove(pfp_url)
             
         for photo in user.commented_photos:
+            print(photo)
             photo_srp = Photo.find(srp, photo)
             if(photo_srp):
                 photo_safe_id = photo_srp.get_safe_id(srp)
@@ -154,8 +156,13 @@ def user_delete():
             photo_srp = Photo.find(srp, photo)
             if(photo_srp):
                 photo_safe_id = photo_srp.get_safe_id(srp)
-                print(photo_safe_id)
                 photo_oid = srp.oid_from_safe(photo_safe_id)
+                ph = srp.load(photo_oid)
+                for comment in ph.get_comments(srp):
+                    com_id = comment.get_safe_id(srp)
+                    com_oid = srp.oid_from_safe(com_id)
+                    com = srp.load(com_oid)
+                    srp.delete(com_oid)
                 if srp.exists(photo_oid):
                     srp.delete(photo_oid)
                 if os.path.exists("src/" + photo):
